@@ -1,21 +1,13 @@
-// pages/api/start-signup.js or /api/start-signup.js (Vercel functions)
-// Purpose: verify reCAPTCHA, validate a Cook Islands number, start SMS verification via Twilio Verify,
-// and optionally send a non-sensitive Telegram notification (masked phone).
-
-import Twilio from 'twilio';
+// Twilio-free start-signup: calls your own OTP provider to SEND the code.
+import crypto from 'crypto';
 
 const {
   RECAPTCHA_SECRET,
-  TWILIO_ACCOUNT_SID,
-  TWILIO_AUTH_TOKEN,
-  TWILIO_VERIFY_SID,
-  TELEGRAM_BOT_TOKEN,
-  TELEGRAM_CHAT_ID
+  OTP_SEND_URL,
+  OTP_API_KEY,
+  OTP_AUTH_BEARER,
+  OTP_HMAC_SECRET
 } = process.env;
-
-const twilio = (TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN)
-  ? Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-  : null;
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -23,30 +15,34 @@ export default async function handler(req, res) {
     const { phone, recaptchaToken } = req.body || {};
     if (!phone || !/^\+682\d{5}$/.test(phone)) throw new Error('Invalid Cook Islands number');
     if (!recaptchaToken) throw new Error('Missing reCAPTCHA token');
+    if (!OTP_SEND_URL) throw new Error('Server not configured: OTP_SEND_URL missing');
 
-    // Verify reCAPTCHA v2/v3 server-side using global fetch (Node 18+)
     const verifyRes = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ secret: RECAPTCHA_SECRET || '', response: recaptchaToken })
     });
     const verifyJson = await verifyRes.json();
     if (!verifyJson.success) throw new Error('reCAPTCHA failed');
 
-    if (!twilio || !TWILIO_VERIFY_SID) throw new Error('Twilio not configured');
+    const headers = { 'Content-Type': 'application/json' };
+    if (OTP_API_KEY) headers['x-api-key'] = OTP_API_KEY;
+    if (OTP_AUTH_BEARER) headers['Authorization'] = `Bearer ${OTP_AUTH_BEARER}`;
 
-    // Start Twilio Verify (sends code to the phone)
-    await twilio.verify.v2.services(TWILIO_VERIFY_SID).verifications.create({ to: phone, channel: 'sms' });
+    const payload = { phone };
+    let body = JSON.stringify(payload);
 
-    // Optional: Telegram notification (NO verification codes, only masked phone)
-    if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
-      const masked = phone.replace(/(\+682)\d{2}(\d{3})/, '$1**$2');
-      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: `New opt-in: ${masked}` })
-      });
+    if (OTP_HMAC_SECRET) {
+      const ts = Math.floor(Date.now() / 1000).toString();
+      const h = crypto.createHmac('sha256', OTP_HMAC_SECRET);
+      h.update(ts + '.' + body);
+      headers['x-timestamp'] = ts;
+      headers['x-signature'] = h.digest('hex');
     }
+
+    const upstream = await fetch(OTP_SEND_URL, { method: 'POST', headers, body });
+    const text = await upstream.text();
+    let data; try { data = JSON.parse(text); } catch { data = { ok: upstream.ok, raw: text }; }
+    if (!upstream.ok) throw new Error(data.error || `OTP provider send failed (${upstream.status})`);
 
     return res.status(200).json({ ok: true });
   } catch (err) {

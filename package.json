@@ -1,10 +1,8 @@
 {
-  "name": "cook-islands-promo",
+  "name": "cook-islands-promo-custom-otp",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "engines": { "node": ">=18" },
-  "dependencies": {
-    "twilio": "^4.22.0"
-  }
+  "dependencies": {}
 }

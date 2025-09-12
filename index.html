@@ -9,81 +9,40 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <style>
-    :root {
-      --accent: #e11d48; /* red */
-      --card-bg: rgba(255,255,255,0.12);
-      --card-border: rgba(255,255,255,0.25);
-      --text: #f8fafc;
-      --muted: #e2e8f0;
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
-      color: var(--text);
-      overflow-x: hidden;
-      background: #0b1220;
-    }
-    /* Background image with subtle transparency overlay */
-    .bg {
-      position: fixed; inset: 0; z-index: -2;
-      background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5v9aoyGUs-CnKNB_LLKhNxDQAjphMIMb9tg&s') center/cover no-repeat;
-      filter: saturate(1.1) contrast(1.02);
-    }
-    .bg::after {
-      content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.45); /* subtle dim */
-    }
-
-    .container { max-width: 880px; margin: 0 auto; padding: 48px 24px 140px; }
-    .hero { text-align: center; margin-top: 6vh; }
-    .hero h1 { font-size: clamp(40px, 7vw, 84px); font-weight: 800; letter-spacing: 0.04em; margin: 0 0 10px; text-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-    .hero p.tag { font-size: clamp(16px, 2.3vw, 26px); color: var(--text); margin: 0 0 28px; font-weight: 600; }
-    .hero p.tag .red { color: var(--accent); }
-
-    .card { backdrop-filter: blur(8px); background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px 20px; margin: 0 auto 28px; max-width: 700px; text-align: center; }
-    .card b { color: var(--muted); }
-
-    .section { margin-top: 38px; text-align: center; }
-    .section h2 { font-weight: 700; margin: 0 0 18px; font-size: 22px; letter-spacing: 0.02em; }
-
-    .phone-row, .code-row {
-      display: flex; justify-content: center; gap: 12px; margin: 12px 0 18px;
-    }
-    .prefix { display: inline-flex; align-items: center; justify-content: center; padding: 12px 14px; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--card-border); min-width: 84px; font-weight: 700; }
-    .digit, .code-digit {
-      width: 56px; height: 64px; text-align: center; font-size: 28px; font-weight: 700; color: var(--text);
-      border-radius: 14px; border: 1px solid var(--card-border); background: rgba(255,255,255,0.06);
-      outline: none; transition: transform .06s ease, box-shadow .2s ease, border-color .2s ease;
-    }
-    .digit:focus, .code-digit:focus { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(0,0,0,0.25); border-color: #94a3b8; }
-
-    .actions { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 10px; }
-    .btn {
-      appearance: none; border: 0; cursor: pointer; border-radius: 14px; padding: 14px 18px; font-weight: 800; letter-spacing: .02em;
-      background: linear-gradient(180deg, #f43f5e, #be123c); color: white; box-shadow: 0 12px 32px rgba(190,18,60,.35);
-    }
-    .btn[disabled] { filter: grayscale(.7) brightness(.8); cursor: not-allowed; box-shadow: none; }
-
-    .notice { font-size: 12px; opacity: .85; margin-top: 8px; }
-
-    .hidden { display: none !important; }
-
-    /* Modal */
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 30; }
-    .modal { width: min(680px, 92vw); border-radius: 18px; padding: 24px; background: #0c1424cc; border: 1px solid var(--card-border); backdrop-filter: blur(10px); }
-    .modal h3 { margin: 0 0 12px; font-size: 24px; }
-
-    /* Cookie consent */
-    .cookie { position: fixed; left: 16px; right: 16px; bottom: 16px; background: #0f172acc; color: var(--text); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; display: none; align-items: center; gap: 12px; z-index: 40; backdrop-filter: blur(10px); }
-    .cookie p { margin: 0; font-size: 14px; opacity: .9; }
-    .cookie .accept { margin-left: auto; }
-
-    footer { margin-top: 80px; }
-    .testimonials { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 18px; }
-    .t { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 14px; }
-    .t .name { font-weight: 700; font-size: 14px; opacity: .9; }
-    .t .msg { margin-top: 6px; font-size: 13px; opacity: .95; }
+    :root { --accent:#e11d48; --card-bg:rgba(255,255,255,.12); --card-border:rgba(255,255,255,.25); --text:#f8fafc; --muted:#e2e8f0; }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans','Apple Color Emoji','Segoe UI Emoji';color:var(--text);overflow-x:hidden;background:#0b1220}
+    .bg{position:fixed;inset:0;z-index:-2;background:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5v9aoyGUs-CnKNB_LLKhNxDQAjphMIMb9tg&s') center/cover no-repeat;filter:saturate(1.1) contrast(1.02)}
+    .bg::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.45)}
+    .container{max-width:880px;margin:0 auto;padding:48px 24px 140px}
+    .hero{text-align:center;margin-top:6vh}
+    .hero h1{font-size:clamp(40px,7vw,84px);font-weight:800;letter-spacing:.04em;margin:0 0 10px;text-shadow:0 8px 32px rgba(0,0,0,.5)}
+    .hero p.tag{font-size:clamp(16px,2.3vw,26px);color:var(--text);margin:0 0 28px;font-weight:600}
+    .hero p.tag .red{color:var(--accent)}
+    .card{backdrop-filter:blur(8px);background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;padding:18px 20px;margin:0 auto 28px;max-width:700px;text-align:center}
+    .card b{color:var(--muted)}
+    .section{margin-top:38px;text-align:center}
+    .section h2{font-weight:700;margin:0 0 18px;font-size:22px;letter-spacing:.02em}
+    .phone-row,.code-row{display:flex;justify-content:center;gap:12px;margin:12px 0 18px}
+    .prefix{display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;border-radius:12px;background:var(--card-bg);border:1px solid var(--card-border);min-width:84px;font-weight:700}
+    .digit,.code-digit{width:56px;height:64px;text-align:center;font-size:28px;font-weight:700;color:var(--text);border-radius:14px;border:1px solid var(--card-border);background:rgba(255,255,255,.06);outline:none;transition:transform .06s ease,box-shadow .2s ease,border-color .2s ease}
+    .digit:focus,.code-digit:focus{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,0,0,.25);border-color:#94a3b8}
+    .actions{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:10px}
+    .btn{appearance:none;border:0;cursor:pointer;border-radius:14px;padding:14px 18px;font-weight:800;letter-spacing:.02em;background:linear-gradient(180deg,#f43f5e,#be123c);color:#fff;box-shadow:0 12px 32px rgba(190,18,60,.35)}
+    .btn[disabled]{filter:grayscale(.7) brightness(.8);cursor:not-allowed;box-shadow:none}
+    .notice{font-size:12px;opacity:.85;margin-top:8px}
+    .hidden{display:none !important}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:30}
+    .modal{width:min(680px,92vw);border-radius:18px;padding:24px;background:#0c1424cc;border:1px solid var(--card-border);backdrop-filter:blur(10px)}
+    .modal h3{margin:0 0 12px;font-size:24px}
+    .cookie{position:fixed;left:16px;right:16px;bottom:16px;background:#0f172acc;color:var(--text);border:1px solid var(--card-border);border-radius:16px;padding:16px;display:none;align-items:center;gap:12px;z-index:40;backdrop-filter:blur(10px)}
+    .cookie p{margin:0;font-size:14px;opacity:.9}
+    .cookie .accept{margin-left:auto}
+    footer{margin-top:80px}
+    .testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}
+    .t{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:14px}
+    .t .name{font-weight:700;font-size:14px;opacity:.9}
+    .t .msg{margin-top:6px;font-size:13px;opacity:.95}
   </style>
 </head>
 <body>
@@ -111,13 +70,12 @@
       </div>
 
       <div class="actions">
-        <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+        <div id="recaptcha"></div>
         <button id="sendCode" class="btn" disabled>Send code</button>
       </div>
       <p class="notice">We only support Cook Islands numbers (+682) for this promo.</p>
     </section>
 
-    <!-- Step 2 Modal: OTP entry -->
     <div id="otpModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="otp-title">
       <div class="modal">
         <h3 id="otp-title">For security reasons we use a verification service to deliver confirmation codes.</h3>
@@ -155,14 +113,17 @@
     </footer>
   </main>
 
-  <!-- Cookie consent banner -->
   <div id="cookie" class="cookie" role="dialog" aria-live="polite">
     <p>We use cookies to provide core functionality and protect against abuse. By clicking Accept, you agree to our cookie policy.</p>
     <button class="btn accept" id="acceptCookies">Accept</button>
   </div>
 
   <script>
-    // --- Cookie consent gating ---
+    // Render reCAPTCHA explicitly with prod vs preview keys
+    const PROD_HOSTS = ['promo-navy.vercel.app'];
+    const SITEKEY_PROD = 'YOUR_PROD_SITE_KEY';
+    const SITEKEY_TEST = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // Google test key
+
     const cookieBanner = document.getElementById('cookie');
     const acceptBtn = document.getElementById('acceptCookies');
     const sendBtn = document.getElementById('sendCode');
@@ -176,7 +137,6 @@
     acceptBtn.addEventListener('click', () => { localStorage.setItem(consentKey, 'yes'); updateConsentUI(); });
     updateConsentUI();
 
-    // --- Input helpers (auto-advance, digits only) ---
     function hookupBoxes(selector) {
       const boxes = Array.from(document.querySelectorAll(selector));
       boxes.forEach((box, idx) => {
@@ -205,37 +165,50 @@
 
     function phoneFromBoxes() {
       const local = phoneDigits.map(b => b.value).join('');
-      return local.length === 5 ? '+682' + local : null; // Cook Islands
+      return local.length === 5 ? '+682' + local : null;
     }
     function codeFromBoxes() {
       const code = codeDigits.map(b => b.value).join('');
       return code.length === 5 ? code : null;
     }
 
-    // --- Modal helpers ---
     const otpModal = document.getElementById('otpModal');
     const closeOtp = document.getElementById('closeOtp');
     closeOtp.addEventListener('click', () => { otpModal.style.display = 'none'; });
 
-    // --- Send code flow (calls Vercel serverless API) ---
+    // Load recaptcha script and render with appropriate key
+    function loadRecaptcha() {
+      const s = document.createElement('script');
+      s.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaReady&render=explicit';
+      s.async = true; s.defer = true;
+      document.head.appendChild(s);
+    }
+    window.onRecaptchaReady = () => {
+      const host = location.hostname;
+      const key = PROD_HOSTS.includes(host) ? SITEKEY_PROD : SITEKEY_TEST;
+      grecaptcha.render('recaptcha', { sitekey: key });
+    };
+    loadRecaptcha();
+
+    // Send code
     sendBtn.addEventListener('click', async () => {
       if (sendBtn.disabled) return;
       const phone = phoneFromBoxes();
       if (!phone) return alert('Please enter a valid Cook Islands number (5 digits after +682).');
 
-      // Ensure reCAPTCHA is solved
-      const recaptchaResponse = grecaptcha.getResponse();
-      if (!recaptchaResponse) return alert('Please complete the reCAPTCHA.');
+      const response = grecaptcha.getResponse();
+      if (!response) return alert('Please complete the reCAPTCHA.');
 
       sendBtn.disabled = true;
       try {
         const res = await fetch('/api/start-signup', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, recaptchaToken: recaptchaResponse })
+          body: JSON.stringify({ phone, recaptchaToken: response })
         });
-        const data = await res.json();
+        let data;
+        try { data = await res.json(); }
+        catch { const txt = await res.text(); throw new Error(`API ${res.status}: ${txt.slice(0,120)}`); }
         if (!res.ok) throw new Error(data.error || 'Failed to start verification');
-        // Show OTP modal on success
         otpModal.style.display = 'flex';
         document.querySelector('.code-digit')?.focus();
       } catch (err) {
@@ -246,7 +219,6 @@
       }
     });
 
-    // --- Verify OTP ---
     document.getElementById('verifyCode').addEventListener('click', async () => {
       const phone = phoneFromBoxes();
       const code = codeFromBoxes();
@@ -256,7 +228,9 @@
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phone, code })
         });
-        const data = await res.json();
+        let data;
+        try { data = await res.json(); }
+        catch { const txt = await res.text(); throw new Error(`API ${res.status}: ${txt.slice(0,120)}`); }
         if (!res.ok || !data.ok) throw new Error(data.error || 'Verification failed');
         otpModal.style.display = 'none';
         document.getElementById('done').style.display = 'block';
